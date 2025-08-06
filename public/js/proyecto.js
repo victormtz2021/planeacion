@@ -104,6 +104,10 @@ function agregarFila() {
   <span class="indicador-badge badge rounded-pill bg-secondary">Sin estado</span>
 </td>
   
+<td class="align-middle">
+  <textarea name="observaciones" class="form-control" rows="2" placeholder="Observaciones..."></textarea>
+</td>
+
  
 <td class="text-center">
 <input type="hidden" name="estatus" value="POR ATENDER">
@@ -328,6 +332,8 @@ async function guardarProyecto(boton) {
   });
   // Aquí agregas manualmente la rama (porque puede estar fuera de inputs o no haber sido detectado)
   data.rama = fila.querySelector('select[name="rama"]').value;
+  data.observaciones = fila.querySelector('textarea[name="observaciones"]')?.value || "";
+
   // ✅ Asegurarse de que porcentaje sea número entero
   data.porcentaje = parseInt(data.porcentaje) || 0;
 
@@ -424,6 +430,7 @@ function editarProyecto(boton) {
     fechaFin: celdas[9].textContent.trim(),
     porcentaje: parseInt(celdas[10].textContent),
     estatus: celdas[11].textContent.trim(),
+    observaciones: celdas[12].textContent.trim(),
   });
 
   celdas[1].innerHTML = `<input class="form-control" name="nombre" value="${celdas[1].textContent.trim()}">`;
@@ -535,12 +542,21 @@ function editarProyecto(boton) {
       badge.className = "indicador-badge badge rounded-pill bg-primary";
     }
   });
+celdas[12].innerHTML = `
+  <textarea class="form-control" name="observaciones" rows="2" placeholder="Observaciones...">${JSON.parse(fila.dataset.original).observaciones || ""}</textarea>
+`;
 
-  celdas[12].innerHTML = `
+  celdas[13].innerHTML = `
     <button class="btn btn-success btn-sm me-1" onclick="guardarEdicion(this)"><i class="bi bi-check-circle"></i></button>
     <button class="btn btn-secondary btn-sm" onclick="cancelarEdicion(this)"><i class="bi bi-x-circle"></i></button>`;
 }
+/*Sirve exclusivamente para los campos con múltiples valores (listas) como:
 
+departamento
+
+area
+
+integrantes*/
 function editarAgregarLista(boton, campo) {
   const contenedor = boton.closest("td");
   const input = contenedor.querySelector("input");
@@ -569,6 +585,7 @@ function editarAgregarLista(boton, campo) {
   input.value = "";
 }
 
+/////////////////////////////////////
 function guardarEdicion(boton) {
   const fila = boton.closest("tr");
   const celdas = fila.children;
@@ -578,21 +595,24 @@ function guardarEdicion(boton) {
       .map((li) => li.textContent.trim())
       .join(";");
 
-  const data = {
-    id: parseInt(celdas[0].textContent.trim()),
-    nombre: celdas[1].querySelector("input").value.trim(),
-    rama: celdas[2].querySelector("select")?.value.trim() || "",
-    descripcion: celdas[3].querySelector("input").value.trim(),
-    tipo_proyecto: celdas[4].querySelector("select").value.trim(),
-    departamento: serializarLista(celdas[5]),
-    area: serializarLista(celdas[6]),
-    integrantes: serializarLista(celdas[7]),
-    fecha_inicio: celdas[8].textContent.trim(), // asumiendo que no se edita
-    fecha_fin: celdas[9].querySelector("input").value,
-    porcentaje: parseInt(celdas[10].querySelector("input").value),
-  };
+const data = {
+  id: parseInt(celdas[0].textContent.trim()),
+  nombre: celdas[1].querySelector("input").value.trim(),
+  rama: celdas[2].querySelector("select")?.value.trim() || "",
+  descripcion: celdas[3].querySelector("input").value.trim(),
+  tipo_proyecto: celdas[4].querySelector("select").value.trim(),
+  departamento: serializarLista(celdas[5]),
+  area: serializarLista(celdas[6]),
+  integrantes: serializarLista(celdas[7]),
+  fecha_inicio: celdas[8].textContent.trim(),
+  fecha_fin: celdas[9].querySelector("input").value,
+  porcentaje: parseInt(celdas[10].querySelector("input").value),
+  observaciones: celdas[12].querySelector("textarea").value.trim()
+};
 
   // Determina el estatus en base al porcentaje
+  if (!data.observaciones) errores.push("observaciones");
+
   if (data.porcentaje === 100) data.estatus = "COMPLETO";
   else if (data.porcentaje >= 50) data.estatus = "ATENDIÉNDOSE";
   else if (data.porcentaje === 0) data.estatus = "POR ATENDER";

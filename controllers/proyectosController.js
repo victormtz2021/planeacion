@@ -36,32 +36,36 @@ const guardarProyecto = async (req, res) => {
     porcentaje,
     estatus,
     rama, // 👈 nuevo campo
+    observaciones, // 👈 nuevo camp
   } = req.body;
   try {
     if (new Date(fecha_fin) < new Date(fecha_inicio)) {
-      return res
-        .status(400)
-        .json({
-          error: "La fecha de fin no puede ser menor que la fecha de inicio.",
-        });
+      return res.status(400).json({
+        error: "La fecha de fin no puede ser menor que la fecha de inicio.",
+      });
     }
 
     const pool = await sql.connect(dbConfig);
-    await pool
-      .request()
-      .input("nombre", sql.NVarChar, nombre)
-      .input("descripcion", sql.NVarChar, descripcion)
-      .input("tipo_proyecto", sql.VarChar, tipo_proyecto)
-      .input("departamento", sql.NVarChar, departamento)
-      .input("area", sql.NVarChar, area)
-      .input("integrantes", sql.NVarChar, integrantes)
-      .input("fecha_inicio", sql.Date, fecha_inicio)
-      .input("fecha_fin", sql.Date, fecha_fin)
-      .input("porcentaje", sql.Int, porcentaje)
-      .input("estatus", sql.VarChar, estatus)
-      .input("rama", sql.NVarChar, rama).query(`INSERT INTO Proyectos
-             (nombre, descripcion, tipo_proyecto, departamento, area, integrantes, fecha_inicio, fecha_fin, porcentaje, estatus, rama, fecha_creacion)
-              VALUES (@nombre, @descripcion, @tipo_proyecto, @departamento, @area, @integrantes, @fecha_inicio, @fecha_fin, @porcentaje, @estatus, @rama, GETDATE())`);
+await pool
+  .request()
+  .input("nombre", sql.NVarChar, nombre)
+  .input("descripcion", sql.NVarChar, descripcion)
+  .input("tipo_proyecto", sql.VarChar, tipo_proyecto)
+  .input("departamento", sql.NVarChar, departamento)
+  .input("area", sql.NVarChar, area)
+  .input("integrantes", sql.NVarChar, integrantes)
+  .input("fecha_inicio", sql.Date, fecha_inicio)
+  .input("fecha_fin", sql.Date, fecha_fin)
+  .input("porcentaje", sql.Int, porcentaje)
+  .input("estatus", sql.VarChar, estatus)
+  .input("rama", sql.NVarChar, rama)
+  .input("observaciones", sql.NVarChar, observaciones || null)
+  .query(`
+    INSERT INTO Proyectos
+    (nombre, descripcion, tipo_proyecto, departamento, area, integrantes, fecha_inicio, fecha_fin, porcentaje, estatus, rama, observaciones, fecha_creacion)
+    VALUES (@nombre, @descripcion, @tipo_proyecto, @departamento, @area, @integrantes, @fecha_inicio, @fecha_fin, @porcentaje, @estatus, @rama, @observaciones, GETDATE())
+  `);
+
 
     res.json({ nombre });
   } catch (error) {
@@ -79,14 +83,14 @@ const editarProyecto = async (req, res) => {
     departamento,
     area,
     integrantes,
-    rama, // 👈 nuevo
+    rama,
     fecha_fin,
     porcentaje,
     estatus,
+    observaciones // ✅ nuevo
   } = req.body;
 
   try {
-    // Obtener la fecha_inicio desde la base de datos para validación
     const pool = await sql.connect(dbConfig);
     const consulta = await pool
       .request()
@@ -95,11 +99,9 @@ const editarProyecto = async (req, res) => {
 
     const fechaInicioBD = consulta.recordset[0]?.fecha_inicio;
     if (fechaInicioBD && new Date(fecha_fin) < new Date(fechaInicioBD)) {
-      return res
-        .status(400)
-        .json({
-          error: "La fecha de fin no puede ser menor que la fecha de inicio.",
-        });
+      return res.status(400).json({
+        error: "La fecha de fin no puede ser menor que la fecha de inicio.",
+      });
     }
 
     await pool
@@ -111,21 +113,24 @@ const editarProyecto = async (req, res) => {
       .input("departamento", sql.NVarChar, departamento)
       .input("area", sql.NVarChar, area)
       .input("integrantes", sql.NVarChar, integrantes)
+      .input("rama", sql.VarChar, rama)
       .input("fecha_fin", sql.Date, fecha_fin)
       .input("porcentaje", sql.Int, porcentaje)
       .input("estatus", sql.VarChar, estatus)
-      .input("rama", sql.VarChar, rama).query(`UPDATE Proyectos SET
-              nombre = @nombre,
-              descripcion = @descripcion,
-              tipo_proyecto = @tipo_proyecto,
-              departamento = @departamento,
-              area = @area,
-              integrantes = @integrantes,
-              rama = @rama, -- 👈 nuevo campo
-              fecha_fin = @fecha_fin,
-              porcentaje = @porcentaje,
-              estatus = @estatus
-            WHERE id = @id`);
+      .input("observaciones", sql.NVarChar, observaciones) // ✅ agregado
+      .query(`UPDATE Proyectos SET
+        nombre = @nombre,
+        descripcion = @descripcion,
+        tipo_proyecto = @tipo_proyecto,
+        departamento = @departamento,
+        area = @area,
+        integrantes = @integrantes,
+        rama = @rama,
+        fecha_fin = @fecha_fin,
+        porcentaje = @porcentaje,
+        estatus = @estatus,
+        observaciones = @observaciones -- ✅ nuevo campo
+        WHERE id = @id`);
 
     res.json({ success: true });
   } catch (error) {

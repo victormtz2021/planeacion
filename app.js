@@ -37,10 +37,6 @@ app.use((req, res, next) => {
 
 
 
-
-
-
-
 // Middleware y configuración
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -75,6 +71,12 @@ app.get('/dashboard', (req, res) => {
 
 const planeacionesRoutes = require('./routes/planeacionesRoutes');
 app.use('/planeaciones', planeacionesRoutes);
+
+
+const usuariosRoutes = require('./routes/usuariosRoutes');
+app.use('/usuarios', usuariosRoutes);
+
+
 
 /*
 const apiRoutes = require('./routes/apiRoutes');

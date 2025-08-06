@@ -50,21 +50,23 @@
       class="table table-striped table-hover table-bordered"
       style="width: 100%"
     >
-<thead class="table-dark">
+<thead class="table-dark ">
   <tr>
     <th style="min-width: 150px;" class="text-center">ID</th>
-    <th style="min-width:  150px;">Proyecto</th>
-    <th style="min-width:  150px;">Rama</th>
-    <th style="min-width:  150px;">Descripción</th>
-    <th style="min-width:  150px;">Tipo</th>
-    <th style="min-width:  150px;">Departamento(s)</th>
-    <th style="min-width:  150px;">Área(s)</th>
-    <th style="min-width:  150px;">Integrante(s)</th>
-    <th style="min-width:  150px;">Inicio</th>
-    <th style="min-width:  150px;">Fin</th>
+    <th style="min-width:  150px;" class="text-center">Proyecto</th>
+    <th style="min-width:  150px;"  class="text-center">Rama</th>
+    <th style="min-width:  150px;"  class="text-center">Descripción</th>
+    <th style="min-width:  150px;"  class="text-center">Tipo</th>
+    <th style="min-width:  150px;"  class="text-center">Departamento(s)</th>
+    <th style="min-width:  150px;"  class="text-center">Área(s)</th>
+    <th style="min-width:  150px;"  class="text-center">Integrante(s)</th>
+    <th style="min-width:  150px;"  class="text-center">Inicio</th>
+    <th style="min-width:  150px;"  class="text-center">Fin</th>
     <th style="min-width: 150px;" class="text-center">%</th>
     <th style="min-width:  150px;" class="text-center">Indicador</th>
+    <th style="min-width: 180px;"  class="text-center">Observaciones</th>
     <th style="min-width:  150px;" class="text-center">Acciones</th>
+
   </tr>
 </thead>
 
@@ -89,7 +91,11 @@
           <td><%= p.estatus %></td>
           
 
-         
+   <td>
+  <textarea name="observaciones" class="form-control" rows="2" disabled><%= p.observaciones || '' %></textarea>
+</td>
+
+
             <td class="text-center">
               <button
                 class="btn btn-sm btn-outline-secondary me-1"
