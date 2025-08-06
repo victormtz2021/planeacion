@@ -1,0 +1,30 @@
+<table id="tablaReporte" class="display nowrap table table-bordered table-striped" style="width:100%">
+
+  <thead>
+    <tr>
+      <th>ID Personal</th>
+      <th>Nombre</th>
+      <th>Viajes</th>
+      <th>Liquidaciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% datos.forEach((fila) => { %>
+      <tr>
+        <td><%= fila.id_personal %></td>
+        <td><%= fila.nombre %></td>
+        <td>
+          <span class="badge <%= fila.Viajes === 'Si tiene viajes' ? 'bg-success' : 'bg-danger' %>">
+            <%= fila.Viajes %>
+          </span>
+        </td>
+        <td>
+          <span class="badge <%= fila.Liquidaciones === 'Si tiene Liquidaciones' ? 'bg-success' : 'bg-warning' %>">
+            <%= fila.Liquidaciones %>
+          </span>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+

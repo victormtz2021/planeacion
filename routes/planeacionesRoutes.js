@@ -3,7 +3,8 @@ const router = express.Router();
 const sql = require("mssql");
 const dbConfig = require("../db/config");
 const { getPersonal, getAreas } = require('../db/royalDb');
-
+const { bloquearPaoEmpleado } = require("../middlewares/verificarRol");
+router.use(bloquearPaoEmpleado);
 
 // 👇 Importa el controlador de proyectos
 const { guardarProyecto,editarProyecto} = require("../controllers/proyectosController");

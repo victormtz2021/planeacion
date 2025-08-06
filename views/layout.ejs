@@ -38,7 +38,11 @@
   <i class="bi bi-people-fill fs-4"></i>
 </a>
 
-    <i class="bi bi-envelope-fill" title="Mensajes"></i>
+   <a href="/reporte-operadores" title="Operadores-Consulta-Liquidaciones">
+  <i class="bi bi-person-vcard-fill"></i>
+</a>
+
+    
     <i class="bi bi-calendar-event-fill" title="Calendario"></i>
     <!-- Planeaciones Dropdown -->
     <div class="dropdown">
@@ -90,6 +94,16 @@
 <!-- Tu script -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Botones de exportación -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<!-- Librerías requeridas por PDF/Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script>
   // Accede a la clase global desde el módulo UMD
   window.jsPDF = window.jspdf.jsPDF;
@@ -99,6 +113,6 @@
 
 <script src="/js/usuarios.js"></script> <!-- DEBE IR AL FINAL -->
 
-
+<script src="/js/reportes.js"></script>
 </body>
 </html>

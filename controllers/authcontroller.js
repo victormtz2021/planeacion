@@ -23,8 +23,10 @@ const login = async (req, res) => {
       return res.render('login', { error: 'Contraseña incorrecta' });
     }
 
+    // ✅ Guardar sesión y versión actual del sistema
     req.session.usuario = user.usuario;
     req.session.rol = user.rol;
+    req.session.appVersion = process.env.APP_VERSION;
 
     res.redirect('/dashboard');
   } catch (err) {
@@ -32,6 +34,7 @@ const login = async (req, res) => {
     res.render('login', { error: 'Error interno del servidor' });
   }
 };
+
 
 const logout = (req, res) => {
   req.session.destroy(() => {
