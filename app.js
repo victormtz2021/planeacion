@@ -19,17 +19,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 /* --------------------------- Sesión ---------------------------- */
+// ★ confía en proxy (útil ahora o si luego pones HTTPS/reverse proxy)
+app.set('trust proxy', 1);
+
+
+
+
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'dev-secret', // ★ fallback seguro en dev
     resave: false,
-    saveUninitialized: false, // evita sesiones vacías (clave para que no salga {} en /test-permisos)
+    saveUninitialized: false,
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: false,          // true solo si usas HTTPS
-      maxAge: 1000 * 60 * 60 * 8 // 8 horas
-    }
+      secure: false,              // ★ HTTP en LAN (pon true solo con HTTPS)
+      maxAge: 1000 * 60 * 60 * 8  // 8h
+    },
+    name: 'sid' // ★ nombre corto y claro para la cookie
   })
 );
 
@@ -41,7 +49,7 @@ app.use((req, res, next) => {
 
 // 🔐 Invalidar sesión si cambia APP_VERSION (solo si está definida)
 app.use((req, res, next) => {
-  const versionSistema = process.env.APP_VERSION; // puede ser undefined
+  const versionSistema = process.env.APP_VERSION;
   if (!req.session) return next();
 
   if (
@@ -89,9 +97,9 @@ const authRoutes = require("./routes/authRoutes");
 const planeacionesRoutes = require("./routes/planeacionesRoutes");
 const usuariosRoutes = require("./routes/usuariosRoutes");
 const reportesRoutes = require("./routes/reportesRoutes");
-const modulosRoutes = require("./routes/modulosRoutes"); // si lo tienes
+const modulosRoutes = require("./routes/modulosRoutes");
 const factCobRoutes = require("./routes/factCobRoutes");
-// 👇 usa el mismo nombre real del archivo del controller (minúsculas si es authcontroller.js)
+// 👇 cuida el nombre real del archivo en sistemas case-sensitive
 const { permisoAuto } = require("./controllers/authcontroller");
 
 /* 🔒 Aplica permisoAuto a todo, excepto login/logout y rutas de debug */
@@ -103,30 +111,20 @@ app.use((req, res, next) => {
 
 /* --- Rutas de diagnóstico (JSON) --- */
 app.get("/debug-session", (req, res) => res.json(req.session));
-
 app.get("/test-permisos", (req, res) => {
-  res.json({
-    usuario: req.session?.usuario,
-    permisos: req.session?.permisos
-  });
+  res.json({ usuario: req.session?.usuario, permisos: req.session?.permisos });
 });
-
 app.get("/cookie-check", (req, res) => {
-  res.json({
-    cookieHeader: req.headers.cookie || null,
-    sid: req.sessionID,
-    usuario: req.session?.usuario || null
-  });
+  res.json({ cookieHeader: req.headers.cookie || null, sid: req.sessionID, usuario: req.session?.usuario || null });
 });
 
 /* ---------------------------- Montar rutas ---------------------------- */
-app.use("/", authRoutes);                       // auth SIEMPRE primero
+app.use("/", authRoutes);       // auth primero
 app.use("/planeaciones", planeacionesRoutes);
 app.use("/usuarios", usuariosRoutes);
-app.use("/modulos", modulosRoutes);             // ya pasa por permisoAuto
+app.use("/modulos", modulosRoutes);
 app.use("/", reportesRoutes);
-app.use("/factcob", factCobRoutes);   // 👈 ¡monta el prefijo!
-
+app.use("/factcob", factCobRoutes);
 
 /* Dashboard (requiere login) */
 app.get("/dashboard", (req, res) => {
@@ -141,7 +139,7 @@ app.get("/", (req, res) => res.redirect("/login"));
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server); // mismo origen → no necesita CORS
 
 io.on("connection", (socket) => {
   console.log("🟢 Nuevo cliente conectado");
@@ -153,7 +151,11 @@ io.on("connection", (socket) => {
 });
 
 /* --------------------------- Arranque HTTP --------------------------- */
-const PORT = process.env.PORT || 3080;
+const isProd = process.env.NODE_ENV === "production";
+const PORT = isProd ? 3080 : 3060;
+
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(
+    `Servidor ${isProd ? "producción" : "desarrollo"} corriendo en http://10.0.0.20:${PORT}`
+  );
 });

@@ -1,30 +1,87 @@
-<table id="tablaReporte" class="display nowrap table table-bordered table-striped" style="width:100%">
+<% /* views/reporte-operadores.ejs */ %>
 
-  <thead>
-    <tr>
-      <th>ID Personal</th>
-      <th>Nombre</th>
-      <th>Viajes</th>
-      <th>Liquidaciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% datos.forEach((fila) => { %>
-      <tr>
-        <td><%= fila.id_personal %></td>
-        <td><%= fila.nombre %></td>
-        <td>
-          <span class="badge <%= fila.Viajes === 'Si tiene viajes' ? 'bg-success' : 'bg-danger' %>">
-            <%= fila.Viajes %>
-          </span>
-        </td>
-        <td>
-          <span class="badge <%= fila.Liquidaciones === 'Si tiene Liquidaciones' ? 'bg-success' : 'bg-warning' %>">
-            <%= fila.Liquidaciones %>
-          </span>
-        </td>
-      </tr>
-    <% }); %>
-  </tbody>
-</table>
+<div class="container-fluid py-3">
+  <!-- Título -->
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-clipboard-data fs-4"></i>
+    <h1 class="h4 mb-0">Reporte de Operadores</h1>
+  </div>
 
+  <form
+    class="row g-2 mb-3"
+    method="get"
+    action="/reporte-operadores"
+    id="formFiltros"
+  >
+    <div class="col-auto">
+      <label class="form-label mb-1">Área</label>
+      <input
+        id="fArea"
+        type="number"
+        class="form-control"
+        name="area"
+        min="1"
+        value="<%= filtros?.area || 1 %>"
+      />
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-1">Del</label>
+      <input
+        id="fDel"
+        type="date"
+        class="form-control"
+        name="del"
+        value="<%= filtros?.del || '' %>"
+      />
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-1">Al</label>
+      <input
+        id="fAl"
+        type="date"
+        class="form-control"
+        name="al"
+        value="<%= filtros?.al || '' %>"
+      />
+    </div>
+    <div class="col-auto align-self-end">
+      <button class="btn btn-primary" type="submit">
+        <i class="bi bi-funnel"></i> Filtrar
+      </button>
+    </div>
+  </form>
+
+  <div class="mb-3 small text-muted">
+    <span class="me-3"
+      >Área: <strong id="lblArea"><%= filtros?.area || 1 %></strong></span
+    >
+    <span class="me-3"
+      >Del: <strong id="lblDel"><%= filtros?.del || '—' %></strong></span
+    >
+    <span>Al: <strong id="lblAl"><%= filtros?.al || '—' %></strong></span>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table
+          id="tablaReporte"
+          class="display nowrap table table-bordered table-striped w-100"
+        >
+          <thead class="table-light">
+            <tr>
+              <th>ID Personal</th>
+              <th>Nombre</th>
+              <th>Área</th> <!-- 👈 NUEVA -->
+              <th>Status</th>
+              <th>Viajes</th>
+              <th>Liquidaciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
