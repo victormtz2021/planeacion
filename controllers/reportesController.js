@@ -34,7 +34,7 @@ const getResumenViajes = async (req, res) => {
         ELSE 'No tiene liquidaciones'
       END
     FROM personal_personal p
-    WHERE p.id_area = @area
+    WHERE p.id_area = @area  and  p.tipo_empleado='o'
   `;
 
   try {

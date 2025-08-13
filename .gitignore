@@ -1,4 +1,21 @@
-# .gitignore
+# dependencias
 node_modules/
+# env / secretos
 .env
+.env.*.local
+# builds / logs / caches
+dist/
+build/
+coverage/
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# editores / SO
+.vscode/
+.idea/
 .DS_Store
+Thumbs.db
+# subidas locales opcionales
+public/uploads/

@@ -1,0 +1,44 @@
+<!-- Sidebar -->
+<div class="sidebar">
+  <i class="bi bi-house-door-fill" title="Inicio"></i>
+  <i class="bi bi-bar-chart-fill" title="Gráficas"></i>
+
+  <% if (permisos.includes('usuarios') || permisos.includes('modulos')) { %>
+    <div class="dropdown">
+      <i class="bi bi-people-fill fs-4 dropdown-toggle" title="Administración" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <ul class="dropdown-menu">
+        <% if (permisos.includes('usuarios')) { %>
+          <li><a class="dropdown-item" href="/usuarios">Usuarios</a></li>
+        <% } %>
+        <% if (permisos.includes('modulos')) { %>
+          <li><a class="dropdown-item" href="/modulos">Módulos</a></li>
+        <% } %>
+      </ul>
+    </div>
+  <% } %>
+
+  <% if (permisos.includes('reportes')) { %>
+    <a href="/reporte-operadores" title="Operadores-Consulta-Liquidaciones">
+      <i class="bi bi-person-vcard-fill"></i>
+    </a>
+  <% } %>
+
+  <% if (permisos.includes('planeaciones')) { %>
+    <div class="dropdown">
+      <i class="bi bi-journal-text dropdown-toggle" title="Planeaciones" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" onclick="abrirModalProyecto()">Proyectos</a></li>
+        <li><a class="dropdown-item" href="/planeaciones/tareas">Tareas</a></li>
+        <li><a class="dropdown-item" href="/planeaciones/actividades">Actividades</a></li>
+      </ul>
+    </div>
+  <% } %>
+
+  <% if (permisos.includes('inventario')) { %>
+    <a href="/inventario" title="Inventario"><i class="bi bi-box-seam"></i></a>
+  <% } %>
+
+  <% if (permisos.includes('factcob')) { %>
+    <a href="/factcob" title="Facturación y Cobranza"><i class="bi bi-receipt-cutoff"></i></a>
+  <% } %>
+</div>

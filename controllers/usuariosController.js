@@ -133,3 +133,103 @@ exports.mostrarUsuariosEliminados = async (req, res) => {
     res.status(500).json({ error: "Error al cargar usuarios eliminados" });
   }
 };
+
+
+exports.guardarPermisos = async (req, res) => {
+  const { idUsuario, permisos } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    // Elimina permisos actuales del usuario
+    await pool.request()
+      .input("idUsuario", sql.Int, idUsuario)
+      .query("DELETE FROM permisos_usuarios WHERE id_usuario = @idUsuario");
+
+    // Inserta nuevos permisos
+    for (let modulo of permisos) {
+      await pool.request()
+        .input("idUsuario", sql.Int, idUsuario)
+        .input("modulo", sql.VarChar, modulo)
+        .query("INSERT INTO permisos_usuarios (id_usuario, modulo) VALUES (@idUsuario, @modulo)");
+    }
+
+    res.json({ ok: true, mensaje: "Permisos guardados correctamente" });
+
+  } catch (err) {
+    console.error("❌ Error al guardar permisos:", err);
+    res.status(500).json({ error: "Error al guardar permisos" });
+  }
+};
+
+
+exports.listaUsuarios = async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request()
+      .query("SELECT id, nombre_completo, usuario, rol FROM login");
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error listaUsuarios:", err);
+    res.status(500).json({ error: "Error obteniendo usuarios" });
+  }
+};
+
+
+// Obtener permisos de un usuario
+exports.obtenerPermisosUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pool = await sql.connect(dbConfig);
+
+    const result = await pool.request()
+      .input("id_usuario", sql.Int, id)
+      .query("SELECT modulo FROM permisos_usuarios WHERE id_usuario = @id_usuario");
+
+    // Enviar array de strings
+    res.json(result.recordset.map(r => r.modulo));
+  } catch (err) {
+    console.error("Error al obtener permisos:", err);
+    res.status(500).json({ error: "Error obteniendo permisos" });
+  }
+};
+
+// Guardar permisos de un usuario
+exports.actualizarPermisosUsuario = async (req, res) => {
+  try {
+    const { id_usuario, permisos } = req.body;
+
+    // Validar que haya usuario seleccionado
+    if (!id_usuario) {
+      return res.status(400).json({ error: "Debes seleccionar un usuario" });
+    }
+
+    const pool = await sql.connect(dbConfig);
+
+    // Eliminar permisos actuales
+    await pool.request()
+      .input("id_usuario", sql.Int, id_usuario)
+      .query("DELETE FROM permisos_usuarios WHERE id_usuario = @id_usuario");
+
+    // Insertar nuevos permisos
+    for (let modulo of permisos) {
+      await pool.request()
+        .input("id_usuario", sql.Int, id_usuario)
+        .input("modulo", sql.NVarChar, modulo)
+        .query(`
+          INSERT INTO permisos_usuarios (id_usuario, modulo)
+          VALUES (@id_usuario, @modulo)
+        `);
+    }
+
+    // Si el usuario editado es el mismo de la sesión → refrescar permisos
+    if (req.session.id_usuario == id_usuario) {
+      req.session.permisos = permisos;
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error actualizarPermisosUsuario:", err);
+    res.status(500).json({ error: "Error actualizando permisos" });
+  }
+};

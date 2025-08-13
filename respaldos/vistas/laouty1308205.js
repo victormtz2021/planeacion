@@ -1,0 +1,140 @@
+<!-- layout.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title><%= typeof title !== 'undefined' ? title : 'Dashboard - Royal Transports' %></title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+ <link href="/css/layout.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Modal Proyecto -->
+  <div class="modal fade" id="modalProyecto" tabindex="-1" aria-labelledby="modalProyectoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalProyectoLabel">Seleccione tipo de proyecto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          <button class="btn btn-primary me-2" onclick="guardarSeleccion('conjunto')" data-bs-dismiss="modal">Proyectos en conjunto</button>
+          <button class="btn btn-secondary" onclick="guardarSeleccion('directivos')" data-bs-dismiss="modal">Proyecto de directivos</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <i class="bi bi-house-door-fill" title="Inicio"></i>
+    <i class="bi bi-bar-chart-fill" title="Gráficas"></i>
+
+                          <!-- Usuarios Dropdown -->
+    <div class="dropdown">
+      <i class="bi bi-people-fill fs-4 dropdown-toggle" title="Usuarios" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="/usuarios">Usuarios</a></li>
+        <li><a class="dropdown-item" href="/modulos">Modulos</a></li>
+      </ul>
+    </div>
+     <!-- <a href="/usuarios" title="Usuarios"><i class="bi bi-people-fill fs-4"></i></a>-->
+
+   <a href="/reporte-operadores" title="Operadores-Consulta-Liquidaciones"><i class="bi bi-person-vcard-fill"></i></a>
+
+     
+
+    <!-- Planeaciones Dropdown -->
+    <div class="dropdown">
+      <i class="bi bi-journal-text dropdown-toggle" title="Planeaciones" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" onclick="abrirModalProyecto()">Proyectos</a></li>
+        <li><a class="dropdown-item" href="/planeaciones/tareas">Tareas</a></li>
+        <li><a class="dropdown-item" href="/planeaciones/actividades">Actividades</a></li>
+      </ul>
+    </div>
+
+          <% if (permisos.includes('factcob')) { %>
+        <a href="/factcob" title="Facturación y Cobranza">
+          <i class="bi bi-receipt-cutoff"></i>
+        </a>
+      <% } %>
+
+  </div>
+
+
+
+  <!-- Topbar -->
+<!-- Topbar -->
+<div class="topbar d-flex justify-content-between align-items-center px-3 py-2">
+  <div>
+    <h5 class="m-0">Royal Transports</h5>
+  </div>
+
+  <div class="dropdown text-end">
+    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-person-circle fs-4 me-2"></i>
+      <strong><%= usuario || 'usuario' %></strong>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end text-small">
+      <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+    </ul>
+  </div>
+</div>
+
+
+  <!-- Contenido principal -->
+  <main class="content">
+    <p id="seleccionProyecto" class="text-muted"></p>
+    <%- body %>
+  </main>
+  
+
+</script>
+<!-- jQuery -->
+ 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Tu script -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Botones de exportación -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<!-- Librerías requeridas por PDF/Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script>
+  // Accede a la clase global desde el módulo UMD
+  window.jsPDF = window.jspdf.jsPDF;
+</script>
+
+<script src="/js/proyecto.js"></script> <!-- DEBE IR AL FINAL -->
+
+<script src="/js/usuarios.js"></script> <!-- DEBE IR AL FINAL -->
+
+<script src="/js/reportes.js"></script>
+</body>
+</html>

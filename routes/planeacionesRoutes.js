@@ -3,26 +3,27 @@ const router = express.Router();
 const sql = require("mssql");
 const dbConfig = require("../db/config");
 const { getPersonal, getAreas } = require('../db/royalDb');
-const { bloquearPaoEmpleado } = require("../middlewares/verificarRol");
-router.use(bloquearPaoEmpleado);
+const verificarAcceso = require("../middlewares/verificarAcceso"); // ✅
+
+
 
 // 👇 Importa el controlador de proyectos
 const { guardarProyecto,editarProyecto} = require("../controllers/proyectosController");
-// Ruta única y correcta
 
-router.get('/proyectos', async (req, res) => {
+// ✅ Aplica el middleware solo a rutas que necesitan permiso de 'planeaciones'
+router.get('/proyectos', verificarAcceso('planeaciones'), async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
     const result = await pool.request().query("SELECT * FROM Proyectos WHERE bandera = 'activo'");
 
     const integrantes = await getPersonal();
-    const areas = await getAreas(); // <- nuevo nombre
+    const areas = await getAreas();
 
     res.render('proyectos', {
       title: 'Catálogo de Proyectos',
       proyectos: result.recordset,
       integrantes,
-      areas // <- pasar a EJS
+      areas
     });
   } catch (err) {
     console.error('Error al obtener proyectos o integrantes:', err);
@@ -30,30 +31,24 @@ router.get('/proyectos', async (req, res) => {
   }
 });
 
-// ✅ Ruta para guardar proyecto desde el frontend
-router.post("/proyectos/agregar", guardarProyecto);
+router.post("/proyectos/agregar", verificarAcceso('planeaciones'), guardarProyecto);
+router.put("/proyectos/editar", verificarAcceso('planeaciones'), editarProyecto);
 
-// ✅ Ruta para editar proyecto desde el frontend
-router.put("/proyectos/editar", editarProyecto);
-
-
-// Otras rutas siguen igual
-router.get("/tareas", (req, res) => {
+router.get("/tareas", verificarAcceso('planeaciones'), (req, res) => {
   res.render("tareas", {
     title: "Tareas",
     usuario: req.session.usuario,
   });
 });
 
-router.get("/actividades", (req, res) => {
+router.get("/actividades", verificarAcceso('planeaciones'), (req, res) => {
   res.render("actividades", {
     title: "Actividades",
     usuario: req.session.usuario,
   });
 });
 
-
-router.put("/proyectos/eliminar/:id", async (req, res) => {
+router.put("/proyectos/eliminar/:id", verificarAcceso('planeaciones'), async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
     await pool.request()
@@ -67,7 +62,7 @@ router.put("/proyectos/eliminar/:id", async (req, res) => {
   }
 });
 
-router.get("/proyectos/eliminados", async (req, res) => {
+router.get("/proyectos/eliminados", verificarAcceso('planeaciones'), async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
     const result = await pool.request()
@@ -79,8 +74,7 @@ router.get("/proyectos/eliminados", async (req, res) => {
   }
 });
 
-
-router.put("/proyectos/restaurar/:id", async (req, res) => {
+router.put("/proyectos/restaurar/:id", verificarAcceso('planeaciones'), async (req, res) => {
   const { id } = req.params;
   try {
     const pool = await sql.connect(dbConfig);
@@ -90,15 +84,14 @@ router.put("/proyectos/restaurar/:id", async (req, res) => {
 
               SELECT * FROM Proyectos WHERE id = @id;`);
 
-    res.json(result.recordset[0]); // ← Esto es clave
+    res.json(result.recordset[0]);
   } catch (err) {
     console.error("Error al restaurar proyecto:", err);
     res.status(500).json({ error: "Error al restaurar proyecto" });
   }
 });
 
-
-
+// 👇 Rutas de uso gráfico, se dejan públicas o puedes también protegerlas si lo deseas:
 router.get("/proyectos/ramas", async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
@@ -107,7 +100,6 @@ router.get("/proyectos/ramas", async (req, res) => {
     FROM Proyectos
     WHERE bandera = 'activo'
     GROUP BY ISNULL(rama, 'Sin asignar');
-
     `);
     res.json(result.recordset);
   } catch (err) {
@@ -115,7 +107,6 @@ router.get("/proyectos/ramas", async (req, res) => {
     res.status(500).json({ error: "Error al obtener datos" });
   }
 });
-
 
 router.get("/proyectos/ramas-indicadores", async (req, res) => {
   try {
@@ -154,7 +145,6 @@ router.get("/proyectos/integrantes-rama", async (req, res) => {
   }
 });
 
-// Esta se usa solo para llenar el <select>
 router.get("/proyectos/ramasPdf", async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
@@ -172,12 +162,10 @@ router.get("/proyectos/ramasPdf", async (req, res) => {
   }
 });
 
-
 router.get("/proyectos/resumen-rama-integrantes", async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
 
-    // Trae todos los campos necesarios
     const result = await pool.request().query(`
       SELECT nombre, rama, integrantes, porcentaje, estatus AS indicador
       FROM Proyectos
@@ -205,7 +193,6 @@ router.get("/proyectos/resumen-rama-integrantes", async (req, res) => {
       }
     }
 
-    // Reformatear para frontend
     const salida = [];
     for (const rama in resumen) {
       for (const integrante in resumen[rama]) {
@@ -223,5 +210,8 @@ router.get("/proyectos/resumen-rama-integrantes", async (req, res) => {
     res.status(500).json({ error: "Error generando resumen por rama" });
   }
 });
+
+
+
 
 module.exports = router;

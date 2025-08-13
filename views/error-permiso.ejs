@@ -1,0 +1,13 @@
+<div class="container text-center mt-5">
+  <h1 class="display-4">⛔ Acceso Denegado</h1>
+  <p class="lead">
+    Hola <strong><%= usuario || 'usuario' %></strong>,
+    no tienes permiso para acceder 
+    <% if (typeof modulo !== 'undefined') { %>
+      al módulo: <strong><%= modulo %></strong>
+    <% } else { %>
+      a esta sección del sistema.
+    <% } %>
+  </p>
+  <a href="/dashboard" class="btn btn-primary mt-3">Volver al inicio</a>
+</div>

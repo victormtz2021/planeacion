@@ -29,17 +29,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Evento guardar
     fila.querySelector(".btnGuardar").addEventListener("click", async () => {
-      const nombre_completo = fila.querySelector('input[name="nombre_completo"]').value.trim();
+      const nombre_completo = fila
+        .querySelector('input[name="nombre_completo"]')
+        .value.trim();
       const usuario = fila.querySelector('input[name="usuario"]').value.trim();
       const correo = fila.querySelector('input[name="correo"]').value.trim();
-      const contrasena = fila.querySelector('input[name="contrasena"]').value.trim();
+      const contrasena = fila
+        .querySelector('input[name="contrasena"]')
+        .value.trim();
       const rol = fila.querySelector('select[name="rol"]').value;
 
       if (!nombre_completo || !usuario || !correo || !contrasena || !rol) {
         Swal.fire({
-          icon: 'warning',
-          title: 'Campos incompletos',
-          text: 'Por favor, llena todos los campos antes de guardar.'
+          icon: "warning",
+          title: "Campos incompletos",
+          text: "Por favor, llena todos los campos antes de guardar.",
         });
         return;
       }
@@ -48,23 +52,33 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/usuarios/agregar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nombre_completo, usuario, correo, contrasena, rol })
+          body: JSON.stringify({
+            nombre_completo,
+            usuario,
+            correo,
+            contrasena,
+            rol,
+          }),
         });
 
         const data = await res.json();
 
         if (res.ok) {
           Swal.fire({
-            icon: 'success',
-            title: 'Usuario guardado',
+            icon: "success",
+            title: "Usuario guardado",
             timer: 1200,
-            showConfirmButton: false
+            showConfirmButton: false,
           }).then(() => location.reload());
         } else {
-          Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+          Swal.fire({ icon: "error", title: "Error", text: data.error });
         }
       } catch {
-        Swal.fire({ icon: 'error', title: 'Error de red', text: 'No se pudo contactar con el servidor.' });
+        Swal.fire({
+          icon: "error",
+          title: "Error de red",
+          text: "No se pudo contactar con el servidor.",
+        });
       }
     });
 
@@ -78,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmButtonColor: "#d33",
         cancelButtonColor: "#6c757d",
         confirmButtonText: "Sí, cancelar",
-        cancelButtonText: "Volver"
+        cancelButtonText: "Volver",
       }).then((result) => {
         if (result.isConfirmed) fila.remove();
       });
@@ -103,9 +117,15 @@ document.addEventListener("DOMContentLoaded", () => {
       celdas[0].innerHTML = `<input type="text" name="nombre_completo" class="form-control" value="${nombre}" required>`;
       celdas[4].innerHTML = `
         <select name="rol" class="form-select">
-          <option value="admin" ${rol === "admin" ? "selected" : ""}>Admin</option>
-          <option value="empleado" ${rol === "empleado" ? "selected" : ""}>Empleado</option>
-          <option value="visualizador" ${rol === "visualizador" ? "selected" : ""}>Visualizador</option>
+          <option value="admin" ${
+            rol === "admin" ? "selected" : ""
+          }>Admin</option>
+          <option value="empleado" ${
+            rol === "empleado" ? "selected" : ""
+          }>Empleado</option>
+          <option value="visualizador" ${
+            rol === "visualizador" ? "selected" : ""
+          }>Visualizador</option>
         </select>
       `;
 
@@ -118,29 +138,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnGuardar && fila) {
       const id = fila.querySelector('input[name="id"]').value;
-      const nombre_completo = fila.querySelector('input[name="nombre_completo"]').value.trim();
+      const nombre_completo = fila
+        .querySelector('input[name="nombre_completo"]')
+        .value.trim();
       const rol = fila.querySelector('select[name="rol"]').value;
 
       if (!nombre_completo || !rol) {
-        return Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Completa todos los campos para guardar.' });
+        return Swal.fire({
+          icon: "warning",
+          title: "Faltan datos",
+          text: "Completa todos los campos para guardar.",
+        });
       }
 
       try {
         const res = await fetch("/usuarios/editar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, nombre_completo, rol })
+          body: JSON.stringify({ id, nombre_completo, rol }),
         });
 
         const data = await res.json();
 
         if (res.ok) {
-          Swal.fire({ icon: 'success', title: 'Usuario actualizado', timer: 1200, showConfirmButton: false }).then(() => location.reload());
+          Swal.fire({
+            icon: "success",
+            title: "Usuario actualizado",
+            timer: 1200,
+            showConfirmButton: false,
+          }).then(() => location.reload());
         } else {
-          Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+          Swal.fire({ icon: "error", title: "Error", text: data.error });
         }
       } catch {
-        Swal.fire({ icon: 'error', title: 'Error de red', text: 'No se pudo contactar con el servidor.' });
+        Swal.fire({
+          icon: "error",
+          title: "Error de red",
+          text: "No se pudo contactar con el servidor.",
+        });
       }
     }
 
@@ -150,23 +185,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-
 ///////////////CODIGO PARA MOSTRAR INACTIVOS USUARIOS EN UN MODAL ////////////////////
-document.getElementById("modalUsuariosEliminados").addEventListener("show.bs.modal", async () => {
-  const tbody = document.querySelector("#tablaEliminados tbody");
-  tbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
+document
+  .getElementById("modalUsuariosEliminados")
+  .addEventListener("show.bs.modal", async () => {
+    const tbody = document.querySelector("#tablaEliminados tbody");
+    tbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
 
-  try {
-    const res = await fetch("/usuarios/eliminados");
-    const data = await res.json();
+    try {
+      const res = await fetch("/usuarios/eliminados");
+      const data = await res.json();
 
-    if (data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5">No hay usuarios eliminados.</td></tr>`;
-      return;
-    }
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">No hay usuarios eliminados.</td></tr>`;
+        return;
+      }
 
-    tbody.innerHTML = data.map(u => `
+      tbody.innerHTML = data
+        .map(
+          (u) => `
       <tr>
         <td>${u.nombre_completo}</td>
         <td>${u.usuario}</td>
@@ -174,8 +211,102 @@ document.getElementById("modalUsuariosEliminados").addEventListener("show.bs.mod
         <td>${u.rol}</td>
         <td>${new Date(u.fecha_baja).toLocaleString()}</td>
       </tr>
-    `).join("");
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5">Error al cargar usuarios eliminados.</td></tr>`;
-  }
+    `
+        )
+        .join("");
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5">Error al cargar usuarios eliminados.</td></tr>`;
+    }
+  });
+
+document
+  .getElementById("formPermisos")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const idUsuario = document.getElementById("usuarioPermiso").value;
+    const checkboxes = document.querySelectorAll(
+      "input[name='permisos']:checked"
+    );
+    const permisos = Array.from(checkboxes).map((cb) => cb.value);
+
+    try {
+      const res = await fetch("/usuarios/permisos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idUsuario, permisos }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        Swal.fire("Éxito", data.mensaje, "success");
+        document.getElementById("formPermisos").reset();
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("modalPermisos")
+        );
+        modal.hide();
+      } else {
+        Swal.fire("Error", data.error, "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire("Error", "No se pudo guardar los permisos", "error");
+    }
+  });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const usuarioSelect = document.getElementById("usuarioPermiso");
+  const formPermisos = document.getElementById("formPermisos");
+
+  // Cuando seleccionas un usuario, cargar sus permisos
+  usuarioSelect.addEventListener("change", async () => {
+    const idUsuario = usuarioSelect.value;
+    if (!idUsuario) return;
+
+    // Limpiar checks
+    document.querySelectorAll("#formPermisos input[type=checkbox]").forEach(cb => cb.checked = false);
+
+    try {
+      const resp = await fetch(`/usuarios/permisos/${idUsuario}`);
+      if (!resp.ok) throw new Error("Error en la consulta de permisos");
+
+      const permisos = await resp.json();
+      permisos.forEach(modulo => {
+        const checkbox = document.getElementById(`perm_${modulo}`);
+        if (checkbox) checkbox.checked = true;
+      });
+    } catch (error) {
+      console.error("Error cargando permisos:", error);
+    }
+  });
+
+  // Guardar permisos
+  formPermisos.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const idUsuario = usuarioSelect.value;
+
+    if (!idUsuario) {
+      alert("⚠️ Debes seleccionar un usuario antes de guardar permisos.");
+      return;
+    }
+
+    const permisosSeleccionados = [...document.querySelectorAll("#formPermisos input[type=checkbox]:checked")].map(cb => cb.value);
+
+    try {
+      const resp = await fetch(`/usuarios/permisos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_usuario: idUsuario, permisos: permisosSeleccionados })
+      });
+
+      if (resp.ok) {
+        alert("✅ Permisos actualizados correctamente");
+        bootstrap.Modal.getInstance(document.getElementById("modalPermisos")).hide();
+      } else {
+        alert("❌ Error al actualizar permisos");
+      }
+    } catch (error) {
+      console.error("Error guardando permisos:", error);
+    }
+  });
 });

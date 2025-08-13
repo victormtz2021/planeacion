@@ -1,27 +1,37 @@
-
 <div class="d-flex flex-wrap gap-2 mb-3">
- <button id="btnAgregarUsuario" class="btn btn-primary mb-3">
-  <i class="bi bi-plus-circle"></i> Agregar Usuario
-</button>
-<!-- Botón -->
-<button class="btn btn-outline-secondary mb-3" data-bs-toggle="modal" data-bs-target="#modalUsuariosEliminados">
-  <i class="bi bi-trash3"></i> Ver usuarios eliminados
-</button>
+  <button id="btnAgregarUsuario" class="btn btn-primary mb-3">
+    <i class="bi bi-plus-circle"></i> Agregar Usuario
+  </button>
+  <!-- Botón -->
+  <button
+    class="btn btn-outline-secondary mb-3"
+    data-bs-toggle="modal"
+    data-bs-target="#modalUsuariosEliminados"
+  >
+    <i class="bi bi-trash3"></i> Ver usuarios eliminados
+  </button>
 
+  <button
+    class="btn btn-warning mb-2"
+    data-bs-toggle="modal"
+    data-bs-target="#modalPermisos"
+  >
+    <i class="bi bi-shield-lock-fill"></i> Asignación de permisos
+  </button>
 
-<table class="table table-bordered table-striped" id="tablaUsuarios">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Usuario</th>
-      <th>Correo</th>
-      <th>Contraseña</th>
-      <th>Rol</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody id="cuerpoTablaUsuarios">
-    <% usuarios.forEach(u => { %>
+  <table class="table table-bordered table-striped" id="tablaUsuarios">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Usuario</th>
+        <th>Correo</th>
+        <th>Contraseña</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="cuerpoTablaUsuarios">
+      <% usuarios.forEach(u => { %>
       <tr>
         <td><%= u.nombre_completo %></td>
         <td><%= u.usuario %></td>
@@ -29,29 +39,43 @@
         <td>••••••</td>
         <td><%= u.rol %></td>
         <td>
-           <button type="button"  class="btn btn-sm btn-outline-warning btnEditar"> <i class="bi bi-pencil-square"></i></button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-warning btnEditar"
+          >
+            <i class="bi bi-pencil-square"></i>
+          </button>
           <form action="/usuarios/eliminar" method="POST" class="d-inline">
-            <input type="hidden" name="id" value="<%= u.id %>">
-            <button class="btn btn-sm btn-outline-danger btn-sm"> <i class="bi bi-trash3-fill"></i></button>
+            <input type="hidden" name="id" value="<%= u.id %>" />
+            <button class="btn btn-sm btn-outline-danger btn-sm">
+              <i class="bi bi-trash3-fill"></i>
+            </button>
           </form>
         </td>
       </tr>
-    <% }) %>
-  </tbody>
-</table>
-
+      <% }) %>
+    </tbody>
+  </table>
 </div>
 
-
-
-
 <!-- Modal -->
-<div class="modal fade" id="modalUsuariosEliminados" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="modalUsuariosEliminados"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content shadow">
       <div class="modal-header">
         <h5 class="modal-title">Usuarios Eliminados</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
       </div>
       <div class="modal-body">
         <table class="table table-bordered table-striped" id="tablaEliminados">
@@ -72,3 +96,207 @@
     </div>
   </div>
 </div>
+
+<!-- Modal: Asignación de permisos -->
+<!-- Modal: Asignación de permisos -->
+<div
+  class="modal fade"
+  id="modalPermisos"
+  tabindex="-1"
+  aria-labelledby="modalPermisosLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="modalPermisosLabel">
+          Asignar Permisos por Usuario
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="formPermisos">
+          <!-- Selección de usuario -->
+          <div class="mb-3">
+            <label for="usuarioPermiso" class="form-label">Seleccionar Usuario</label>
+            <select id="usuarioPermiso" class="form-select" required>
+              <option value="">-- Selecciona --</option>
+              <% usuarios.forEach(u => { %>
+                <option value="<%= u.id %>">
+                  <%= u.nombre_completo %> (<%= u.usuario %>)
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Lista de módulos -->
+          <div class="mb-3">
+            <label class="form-label">Módulos permitidos:</label>
+            
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="permisos"
+                value="planeaciones"
+                id="perm_planeaciones"
+              />
+              <label class="form-check-label" for="perm_planeaciones">Planeaciones</label>
+            </div>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="permisos"
+                value="usuarios"
+                id="perm_usuarios"
+              />
+              <label class="form-check-label" for="perm_usuarios">Usuarios</label>
+            </div>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="permisos"
+                value="reportes"
+                id="perm_reportes"
+              />
+              <label class="form-check-label" for="perm_reportes">Reportes</label>
+            </div>
+
+            <!-- dentro del Modal: Asignación de permisos -->
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="permisos"
+                value="factcob"
+                id="perm_factcob"
+              />
+              <label class="form-check-label" for="perm_factcob">
+                Facturación y Cobranza
+              </label>
+            </div>
+            <!-- Si en el futuro agregas más módulos, solo copia la estructura -->
+          </div>
+
+          <!-- Botón de guardar -->
+          <div class="text-end">
+            <button type="submit" class="btn btn-success">
+              Guardar Permisos
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Agregar Módulo -->
+<div
+  class="modal fade"
+  id="modalAgregarModulo"
+  tabindex="-1"
+  aria-labelledby="modalAgregarModuloLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="modalAgregarModuloLabel">
+          <i class="bi bi-window-plus me-1"></i> Nuevo módulo
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form id="formAgregarModulo">
+        <div class="modal-body">
+          <div class="mb-2">
+            <label for="nombreModulo" class="form-label"
+              >Nombre del módulo</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="nombreModulo"
+              required
+            />
+          </div>
+          <div class="mb-2">
+            <label for="claveModulo" class="form-label"
+              >Clave técnica (única)</label
+            >
+            <input type="text" class="form-control" id="claveModulo" required />
+          </div>
+          <div class="mb-2">
+            <label for="rutaModulo" class="form-label">Ruta</label>
+            <input
+              type="text"
+              class="form-control"
+              id="rutaModulo"
+              required
+              placeholder="/ejemplo"
+            />
+          </div>
+          <div class="mb-2">
+            <label for="iconoModulo" class="form-label"
+              >Ícono (clase Bootstrap)</label
+            >
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="iconoModulo"
+                placeholder="bi bi-grid-3x3-gap-fill"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#modalIconos"
+              >
+                Seleccionar ícono
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label for="ordenModulo" class="form-label">Orden en el menú</label>
+            <input
+              type="number"
+              class="form-control"
+              id="ordenModulo"
+              value="1"
+              min="1"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle"></i> Guardar
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,77 @@
+<!-- views/modulos.ejs -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="m-0">Catálogo de Módulos</h3>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalModulo" id="btnNuevoModulo">
+    <i class="bi bi-window-plus"></i> Nuevo módulo
+  </button>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered align-middle" id="tablaModulos">
+    <thead class="table-light">
+      <tr>
+        <th>Clave</th>
+        <th>Descripción</th>
+        <th>Prefijos</th>
+        <th>Orden</th>
+        <th>Activo</th>
+        <th style="width: 140px;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Modal Crear/Editar -->
+<div class="modal fade" id="modalModulo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="tituloModalModulo">Nuevo módulo</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formModulo">
+        <input type="hidden" id="moduloId">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Clave (técnica)</label>
+              <input type="text" class="form-control" id="clave" required placeholder="inventario">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Descripción</label>
+              <input type="text" class="form-control" id="descripcion" required placeholder="Catálogo Inventario">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Orden</label>
+              <input type="number" class="form-control" id="orden" value="0" min="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Ícono (Bootstrap Icons)</label>
+              <input type="text" class="form-control" id="icono" placeholder="bi bi-box-seam">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Activo</label>
+              <select id="activo" class="form-select">
+                <option value="1">Sí</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Prefijos de ruta (uno por línea)</label>
+              <textarea id="prefixesText" rows="4" class="form-control" placeholder="/inventario
+/inventario-entradas"></textarea>
+              <div class="form-text">Se protegerán por <code>permisoAuto</code>. Deben iniciar con <code>/</code>.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" type="submit"><i class="bi bi-check2-circle"></i> Guardar</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/modulos.js"></script>
