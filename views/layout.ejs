@@ -83,8 +83,17 @@
         <i class="bi bi-receipt-cutoff"></i>
       </a>
     <% } %>
+
+        <!-- reseteos -->
+    <% if (permisos.includes('reseteos')) { %>
+      <a href="/reseteos" title="reseteos">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </a>
+    <% } %>
   </div>
 
+  
+  </div>
   <!-- Topbar -->
   <div class="topbar d-flex justify-content-between align-items-center px-3 py-2">
     <div>
@@ -136,5 +145,6 @@
   <script src="/js/proyecto.js"></script>
   <script src="/js/usuarios.js"></script>
   <script src="/js/reportes.js"></script>
+  <script src="/js/reseteos.js"></script>
 </body>
 </html>

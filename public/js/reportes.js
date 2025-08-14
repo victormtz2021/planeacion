@@ -41,9 +41,10 @@ $(document).ready(function () {
       dataSrc: "data",
     },
     columns: [
-      { data: "id_personal" },
-      { data: "nombre" },
-      { data: "nombre_area" },
+      { data: "id_personal" , defaultContent: ""},
+      { data: "nombre", defaultContent: "" },
+      { data: "categoria", defaultContent: "" },
+      { data: "nombre_area", defaultContent: "" },
       {
         data: "status", // ← viene 'A' o 'B'
         render: (code) => {
@@ -75,6 +76,26 @@ $(document).ready(function () {
           `<span class="badge ${
             v === "Si tiene Liquidaciones" ? "bg-success" : "bg-warning"
           }">${v}</span>`,
+      },
+      {
+        data: "ultimaliquidacion",
+        render: function (data) {
+          if (!data || data === 0) {
+            return '<span class="text-muted">No ha realizado viaje en esta área</span>';
+          }
+          return data;
+        },
+      },
+      {
+        data: "FECHAPAGO",
+        render: function (data) {
+          if (!data) return '<span class="text-muted">Aún no hay pago</span>'; // vacío o null
+          const fecha = new Date(data);
+          // Formato YYYY-MM-DD
+          return fecha.toISOString().split("T")[0];
+          // O formato local DD/MM/YYYY:
+          // return fecha.toLocaleDateString('es-MX');
+        },
       },
     ],
 

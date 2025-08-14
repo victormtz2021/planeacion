@@ -2,6 +2,7 @@
 const express = require("express");
 const session = require("express-session");
 const expressLayouts = require("express-ejs-layouts");
+const fs = require("fs"); // ya tienes path arriba
 const path = require("path");
 require("dotenv").config();
 
@@ -21,11 +22,6 @@ app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------- Sesión ---------------------------- */
 // ★ confía en proxy (útil ahora o si luego pones HTTPS/reverse proxy)
 app.set('trust proxy', 1);
-
-
-
-
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'dev-secret', // ★ fallback seguro en dev
@@ -91,7 +87,26 @@ app.use((req, res, next) => {
   res.setHeader("Expires", "0");
   next();
 });
+/********************************************************************** */
+app.use((req, res, next) => {
+  const originalRender = res.render.bind(res);
+  res.safeRender = (view, data = {}) => {
+    const viewFile = path.join(app.get("views"), `${view}.${app.get("view engine")}`);
+    if (!fs.existsSync(viewFile)) {
+      return originalRender("en-construccion", { title: "En construcción", vistaSolicitada: view });
+    }
+    return originalRender(view, data);
+  };
+  next();
+});
 
+// Captura global de errores de 'Failed to lookup view ...'
+app.use((err, req, res, next) => {
+  if (err && /Failed to lookup view/i.test(err.message)) {
+    return res.status(200).render("en-construccion", { title: "En construcción" });
+  }
+  next(err);
+});
 /* ----------------------- Rutas y permisos ---------------------- */
 const authRoutes = require("./routes/authRoutes");
 const planeacionesRoutes = require("./routes/planeacionesRoutes");
@@ -101,6 +116,7 @@ const modulosRoutes = require("./routes/modulosRoutes");
 const factCobRoutes = require("./routes/factCobRoutes");
 // 👇 cuida el nombre real del archivo en sistemas case-sensitive
 const { permisoAuto } = require("./controllers/authcontroller");
+const reseteos = require("./routes/reseteosRoutes");
 
 /* 🔒 Aplica permisoAuto a todo, excepto login/logout y rutas de debug */
 app.use((req, res, next) => {
@@ -125,6 +141,7 @@ app.use("/usuarios", usuariosRoutes);
 app.use("/modulos", modulosRoutes);
 app.use("/", reportesRoutes);
 app.use("/factcob", factCobRoutes);
+app.use("/reseteos", reseteos);
 
 /* Dashboard (requiere login) */
 app.get("/dashboard", (req, res) => {
@@ -152,7 +169,7 @@ io.on("connection", (socket) => {
 
 /* --------------------------- Arranque HTTP --------------------------- */
 const isProd = process.env.NODE_ENV === "production";
-const PORT = isProd ? 3080 : 3060;
+const PORT = isProd ? 3040 : 3050;
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(

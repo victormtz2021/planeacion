@@ -35,17 +35,20 @@ router.post("/proyectos/agregar", verificarAcceso('planeaciones'), guardarProyec
 router.put("/proyectos/editar", verificarAcceso('planeaciones'), editarProyecto);
 
 router.get("/tareas", verificarAcceso('planeaciones'), (req, res) => {
-  res.render("tareas", {
+  /*res.render("tareas", {
     title: "Tareas",
     usuario: req.session.usuario,
-  });
+  });*/
+
+ res.safeRender("tareas", { title: "Tareas" });
 });
 
 router.get("/actividades", verificarAcceso('planeaciones'), (req, res) => {
-  res.render("actividades", {
+ /* res.render("actividades", {
     title: "Actividades",
     usuario: req.session.usuario,
-  });
+  });*/
+  res.safeRender("actividades", { title: "En actividades" });
 });
 
 router.put("/proyectos/eliminar/:id", verificarAcceso('planeaciones'), async (req, res) => {

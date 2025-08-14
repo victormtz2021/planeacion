@@ -1,6 +1,9 @@
 # dependencias
 node_modules/
 # env / secretos
+keys/
+*.ppk
+*.pem
 .env
 .env.*.local
 # builds / logs / caches
@@ -19,3 +22,11 @@ yarn-error.log*
 Thumbs.db
 # subidas locales opcionales
 public/uploads/
+
+# Logs
+logs/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db

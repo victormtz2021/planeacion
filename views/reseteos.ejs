@@ -1,0 +1,49 @@
+<div class="container py-3">
+  <h1 class="h4 mb-2"><i class="bi bi-file-earmark-code"></i> Reseteos</h1>
+  <p class="small text-muted mb-3">
+    Destino: <code><%= destino %></code> • Máx: <%= maxMB %> MB/archivo • Solo .xml
+  </p>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <form id="formUpload" class="mb-2">
+        <div id="dropArea" class="border rounded-3 p-4 text-center mb-3" style="border-style: dashed;">
+          <p class="mb-1"><strong>Arrastra tus XML aquí</strong> o</p>
+          <label class="btn btn-primary mb-0">
+            Seleccionar archivos
+            <input type="file" id="inputXMLs" name="xmls" accept=".xml" multiple hidden>
+          </label>
+          <div id="filesPreview" class="small text-muted mt-2"></div>
+        </div>
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-cloud-upload"></i> Subir XML
+        </button>
+      </form>
+      <div id="resultMsg" class="small"></div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <table id="tablaReseteos" class="table table-striped w-100">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Archivo</th>
+            <th>Tamaño</th>
+            <th>Ruta</th>
+            <th>Usuario</th>
+            <th>Área</th>
+            <th>Puesto</th>
+            <th>Fecha subida</th>
+            <th>Procesado</th>
+            <th>Observaciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
