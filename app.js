@@ -4,6 +4,9 @@ const session = require("express-session");
 const expressLayouts = require("express-ejs-layouts");
 const fs = require("fs"); // ya tienes path arriba
 const path = require("path");
+
+//const { startPerlCron } = require('./jobs/runPerlRemote'); // el job que te pasé antes
+const { startReseteosCron } = require('./jobs/reseteosCron');
 require("dotenv").config();
 
 const app = express();
@@ -120,7 +123,7 @@ const reseteos = require("./routes/reseteosRoutes");
 
 /* 🔒 Aplica permisoAuto a todo, excepto login/logout y rutas de debug */
 app.use((req, res, next) => {
-  const skip = ["/login", "/logout", "/test-permisos", "/debug-session", "/cookie-check"];
+const skip = ["/login", "/logout", "/test-permisos", "/debug-session", "/cookie-check", "/reseteos/perl-run"];
   if (skip.some(p => req.path.startsWith(p))) return next();
   return permisoAuto(req, res, next);
 });
@@ -142,6 +145,9 @@ app.use("/modulos", modulosRoutes);
 app.use("/", reportesRoutes);
 app.use("/factcob", factCobRoutes);
 app.use("/reseteos", reseteos);
+
+startReseteosCron();
+//startPerlCron(); // usa PERL_CRON=*/8 * * * *
 
 /* Dashboard (requiere login) */
 app.get("/dashboard", (req, res) => {
